@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var inlineSource = require('inline-source');
 
-function readdir ( directory, callback ) {
+function readdir ( directory ) {
     var result = [];
     if (fs.existsSync(directory)) {
         var files = fs.readdirSync(directory);
@@ -55,9 +55,9 @@ HtmlInlineSourceWebpackPlugin.prototype.apply = function ( compiler ) {
     var configs = this.configs;
     var length = configs.length;
     var callback = this.callback;
-    compiler.plugin('done', function ( stats ) {
+    (compiler.hooks ? compiler.hooks.done.tapAsync.bind(compiler.hooks.done, 'HtmlWebpackPlugin') : compiler.plugin.bind(compiler, 'done'))( function ( stats ) {
         var compiler = stats.compilation.compiler;
-        var outputPath = path.join(compiler.context, compiler.outputPath);
+        var outputPath = compiler.outputPath;
         var defaults = {
             compress : false,
             rootpath : outputPath,
